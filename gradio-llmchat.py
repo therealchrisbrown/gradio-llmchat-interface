@@ -1,6 +1,8 @@
 import gradio as gr
 import transformers
 from threading import Thread
+from accelerate import disk_offload
+
 
 model_id = "stabilityai/StableBeluga-7B"
 
@@ -8,11 +10,12 @@ model = transformers.AutoModelForCausalLM.from_pretrained(
     model_id,
     trust_remote_code=True,
     device_map='auto',
+    offload_folder="offload/"
 )
+disk_offload(model=model, offload_dir="offload")
 
 tokenizer = transformers.AutoTokenizer.from_pretrained(
     model_id,
-
 )
 
 DESCRIPTION = """
