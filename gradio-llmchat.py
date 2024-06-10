@@ -1,15 +1,21 @@
 import gradio as gr
 import transformers
+import torch
 from threading import Thread
 from accelerate import disk_offload
 
 
 model_id = "stabilityai/StableBeluga-7B"
 
+def get_device_map() -> str:
+    return 'cuda' if torch.cuda.is_available() else 'cpu'
+
+device = get_device_map()  # 'cpu'
+
 model = transformers.AutoModelForCausalLM.from_pretrained(
     model_id,
     trust_remote_code=True,
-    device_map='auto',
+    device_map=device,
     offload_folder="offload/"
 )
 disk_offload(model=model, offload_dir="offload")
